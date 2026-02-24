@@ -2,6 +2,15 @@
 const mongoose = require("mongoose");
 
 const reservationSchema = new mongoose.Schema({
+   nom: {
+    type: String,
+    required: true
+  },
+  telephone: {
+    type: String,
+    required: true
+  },
+  email: String,
   offre: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Offre",

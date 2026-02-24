@@ -1,5 +1,5 @@
 // controllers/notificationController.js
-const Notification = require("../models/notification");
+const Notification = require("../models/Notification");
 
 // Ajouter une notification
 exports.ajouterNotification = async (req, res) => {
@@ -52,12 +52,3 @@ exports.deleteNotification = async (req, res) => {
   }
 };
 
-// Supprimer toutes les notifications
-exports.deleteAllNotifications = async (req, res) => {
-  try {
-    await Notification.deleteMany({});
-    res.json({ message: "Toutes les notifications supprimées avec succès" });
-  } catch (err) {
-    res.status(500).json({ message: "Erreur de suppression", error: err.message });
-  }
-};

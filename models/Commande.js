@@ -20,7 +20,14 @@ const commandeSchema = new mongoose.Schema({
     type: Number,
     required: true,
     min: 0
+  },
+  // ✅ Ajouter la référence vers Offre
+  offre: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Offre",
+    required: true
   }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Commande", commandeSchema);

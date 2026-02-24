@@ -29,6 +29,8 @@ app.use('/api/reservation', reservationRoutes);
 app.use('/api/restaurant', restaurantRoutes);
 app.use('/api/paiement', paiementRoutes);
 app.use('/api/notification', notificationRoutes);
+app.get('/test',(req, res) => {res.send('api ok');});
+
 
 const PORT = process.env.PORT || 5000;
 

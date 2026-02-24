@@ -18,7 +18,7 @@ const paiementSchema = new mongoose.Schema({
   },
   methodePaiement: {
     type: String,
-    enum: ['carte', 'espèces'],
+    enum: ['carte', 'espèces', 'en ligne'],
     default: 'espèces'
   }
 }, { timestamps: true });

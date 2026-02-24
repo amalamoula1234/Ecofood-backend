@@ -8,7 +8,7 @@ const notificationSchema = new mongoose.Schema({
   },
   dateEnvoi: {
     type: Date,
-    default: Date.now
+    required: true
   }
 }, { timestamps: true });
 

@@ -2,6 +2,12 @@
 const mongoose = require("mongoose");
 
 const offreSchema = new mongoose.Schema({
+  nom: {                
+    type: String,
+    required: true,
+    trim: true,
+             
+  },
   description: {
     type: String,
     required: true,
@@ -23,7 +29,12 @@ const offreSchema = new mongoose.Schema({
   disponibilite: {
     type: Boolean,
     default: true
+  },
+  image: {
+    type: String,  
+    default: null
   }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Offre", offreSchema);
