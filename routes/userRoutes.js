@@ -3,6 +3,10 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 
+// ✅ Auth routes
+
+
+// CRUD routes
 router.post("/ajouter", userController.ajouterUtilisateur);
 router.get("/liste", userController.listerUtilisateurs);
 router.get("/:id", userController.getUtilisateurById);
