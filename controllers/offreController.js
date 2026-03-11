@@ -70,3 +70,16 @@ exports.deleteOffre = async (req, res) => {
     res.status(500).json({ message: "Erreur de suppression", error: err.message });
   }
 };
+// Lister offres par restaurant (client)
+exports.listerOffresParRestaurant = async (req, res) => {
+  try {
+    const offres = await Offre.find({ 
+      restaurant: req.params.restaurantId,
+      disponibilite: true  // ychouf offres disponibles bas
+    }).populate("restaurant", "nom adresse photo");
+    
+    res.json(offres);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

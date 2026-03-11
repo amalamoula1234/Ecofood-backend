@@ -1,16 +1,18 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
+const cors = require("cors"); // ✅ إضافة cors
 
 dotenv.config();
 connectDB();
 
 const app = express();
 
+// middleware
+app.use(cors()); // ✅ السماح للـ frontend بالاتصال
 app.use(express.json());
 
-// IMPORTANT ✅ importer les routes
-
+// IMPORT ROUTES
 const userRoutes = require("./routes/userRoutes");
 const offreRoutes = require("./routes/offreRoutes");
 const commandeRoutes = require("./routes/commandeRoutes");
@@ -19,9 +21,7 @@ const restaurantRoutes = require("./routes/restaurantRoutes");
 const paiementRoutes = require("./routes/paiementRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 
-
-// utiliser les routes
-
+// USE ROUTES
 app.use('/api/user', userRoutes);
 app.use('/api/commande', commandeRoutes);
 app.use("/api/offre", offreRoutes);
@@ -29,8 +29,10 @@ app.use('/api/reservation', reservationRoutes);
 app.use('/api/restaurant', restaurantRoutes);
 app.use('/api/paiement', paiementRoutes);
 app.use('/api/notification', notificationRoutes);
-app.get('/test',(req, res) => {res.send('api ok');});
 
+app.get('/test', (req, res) => {
+  res.send('api ok');
+});
 
 const PORT = process.env.PORT || 5000;
 

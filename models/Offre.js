@@ -6,7 +6,10 @@ const offreSchema = new mongoose.Schema({
     type: String,
     required: true,
     trim: true,
-             
+  },
+  categorie: {
+    type: String,
+    default: "Autre",
   },
   description: {
     type: String,
@@ -16,25 +19,34 @@ const offreSchema = new mongoose.Schema({
   prix: {
     type: Number,
     required: true,
-    min: 0
+    min: 0,
+  },
+  prixAncien: {
+    type: Number,
+    default: null, // prix original avant promo
+  },
+  dureeHeures: {
+    type: Number,
+    default: 1, // 1H par défaut
   },
   dateDebut: {
     type: Date,
-    required: true
+    default: Date.now, // commence l'offre maintenant
   },
-  dateFin: {
-    type: Date,
-    required: true
-  },
+  
   disponibilite: {
     type: Boolean,
     default: true
   },
   image: {
     type: String,  
-    default: null
-  }
-
+    default: null,
+  },
+    restaurant: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Restaurant",
+    required: true,
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model("Offre", offreSchema);

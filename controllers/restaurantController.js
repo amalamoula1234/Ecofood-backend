@@ -1,5 +1,5 @@
 // controllers/restaurantController.js
-const Restaurant = require("../models/restaurant");
+const Restaurant = require("../models/Restaurant");
 
 // Ajouter un restaurant
 exports.ajouterRestaurant = async (req, res) => {

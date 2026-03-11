@@ -1,4 +1,3 @@
-// models/Restaurant.js
 const mongoose = require("mongoose");
 
 const restaurantSchema = new mongoose.Schema({
@@ -7,17 +6,24 @@ const restaurantSchema = new mongoose.Schema({
     required: true
   },
   adresse: {
-    type: String,
-    required: true
+    type: String
   },
-  telephone: String,
-  description: String,
-  categorie: {
-    type: String,
-    
+  telephone: {
+    type: String
   },
-  horaires: String,
-  image: String
+  type_cuisine: {
+    type: String
+  },
+  photo: {
+    type: String
+  },
+// ✅ Lien avec User (restaurateur)
+  restaurateur: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+
 }, { timestamps: true });
 
 module.exports = mongoose.model("Restaurant", restaurantSchema);
