@@ -2,6 +2,8 @@ const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors"); // ✅ إضافة cors
+const path = require("path");
+
 
 dotenv.config();
 connectDB();
@@ -11,6 +13,8 @@ const app = express();
 // middleware
 app.use(cors()); // ✅ السماح للـ frontend بالاتصال
 app.use(express.json());
+
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // IMPORT ROUTES
 const userRoutes = require("./routes/userRoutes");
