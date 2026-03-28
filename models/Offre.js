@@ -42,11 +42,8 @@ const offreSchema = new mongoose.Schema({
     type: String,  
     default: null,
   },
-    restaurant: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Restaurant",
-    required: true,
-  },
+    restaurant: { type: mongoose.Schema.Types.ObjectId, ref: 'Restaurant', required: true },
+    
 }, { timestamps: true });
 
 module.exports = mongoose.model("Offre", offreSchema);

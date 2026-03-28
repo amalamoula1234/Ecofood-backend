@@ -9,7 +9,7 @@ router.get("/liste", offreController.listerOffres);
 // TZIDHA fi routes/offreRoutes.js
 router.get("/restaurant/:restaurantId",offreController.listerOffresParRestaurant);
 router.get("/:id",offreController.getOffreById);
-router.put("/:id", protect, authorizeRoles(["admin","restaurateur"]), offreController.updateOffre);
-router.delete("/:id",  protect, authorizeRoles(["admin","restaurateur"]),offreController.deleteOffre);
+router.put("/:id", offreController.updateOffre);
+router.delete("/:id", offreController.deleteOffre);
 
 module.exports = router;
