@@ -43,7 +43,7 @@ app.post('/create-checkout-session', async (req, res) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: offre.nom || "Test Course",
+              name: offre.nom || "Test Offre",
               description: "Test Payment",
             },
             // CHANGE: 0 is not allowed in 'payment' mode. 
