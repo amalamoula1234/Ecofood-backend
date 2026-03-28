@@ -3,7 +3,7 @@ const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const cors = require("cors"); // ✅ إضافة cors
 const path = require("path");
-const stripe = require('stripe')('sk_test_51T66F0HFGpjAUDIH60kNPZ4n7rCyaoXAkZUIGW0M5w3I3FxCSHN0NEYuNMuUbMndGKLmWXbPYiY7POZ8ho41HFsg00N8NbZx2W');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
 
