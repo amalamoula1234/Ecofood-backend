@@ -75,7 +75,7 @@ exports.listerOffresParRestaurant = async (req, res) => {
   try {
     const offres = await Offre.find({ 
       restaurant: req.params.restaurantId,
-      disponibilite: true  // ychouf offres disponibles bas
+      disponibilite: true
     }).populate("restaurant", "nom adresse photo");
     
     res.json(offres);

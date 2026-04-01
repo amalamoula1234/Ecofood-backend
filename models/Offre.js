@@ -35,7 +35,7 @@ const offreSchema = new mongoose.Schema({
   },
   
   disponibilite: {
-    type: String,
+    type: Boolean,
     default: true
   },
   image: {

@@ -30,7 +30,6 @@ const notificationRoutes = require("./routes/notificationRoutes");
 app.post('/create-checkout-session', async (req, res) => {
   const { offre } = req.body;
 
-  // Add a check to prevent crashing if course is undefined
   if (!offre) {
     return res.status(400).json({ error: "No offre data provided" });
   }
@@ -43,24 +42,25 @@ app.post('/create-checkout-session', async (req, res) => {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: offre.nom || "Test Offre",
-              description: "Test Payment",
+              name: offre.nom,
+              description: offre.description,
+              images: offre.image
+                ? [`http://localhost:5000/uploads/${offre.image}`]
+                : [],
             },
-            // CHANGE: 0 is not allowed in 'payment' mode. 
-            // Use 50 (which is $0.50) to test a real flow.
-            unit_amount: 50, 
+            unit_amount: offre.prix * 100, // ✅ FIX
           },
-          quantity: 1,
+          quantity: 1, // ⚠️ مهم
         },
       ],
       mode: 'payment',
-      success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel',
+      success_url: 'http://localhost:5173/success',
+      cancel_url: 'http://localhost:5173/cancel',
     });
 
     res.json({ url: session.url });
   } catch (e) {
-    console.error("Stripe Error:", e.message); // This shows the error in your terminal
+    console.error("Stripe Error:", e.message);
     res.status(500).json({ error: e.message });
   }
 });
