@@ -1,10 +1,25 @@
 // controllers/commandeController.js
-const Commande = require("../models/commande");
+const Commande = require("../models/Commande");
+const Offre = require("../models/Offre");
 
-// Ajouter une commande
+// ➤ Ajouter une commande
 exports.ajouterCommande = async (req, res) => {
   try {
-    const nouvelleCommande = new Commande(req.body);
+    const { offreId, client, total } = req.body;
+
+    // Vérifier que l'offre existe
+    const offre = await Offre.findById(offreId);
+    if (!offre) return res.status(404).json({ message: "Offre non trouvée" });
+
+    const nouvelleCommande = new Commande({
+      offre: offre._id,
+      client: client || null,       // si client pas fourni
+      restaurant: offre.restaurant, // depuis l'offre
+      total: total || offre.prix,
+      statut: "en_attente",
+      statutPaiement: "en_attente"
+    });
+
     await nouvelleCommande.save();
     res.status(201).json(nouvelleCommande);
   } catch (err) {
@@ -12,26 +27,27 @@ exports.ajouterCommande = async (req, res) => {
   }
 };
 
-// Lister toutes les commandes
+// ➤ Lister toutes les commandes
 exports.listerCommandes = async (req, res) => {
   try {
     const commandes = await Commande.find()
-      .populate("offre", "description prix dateDebut dateFin disponibilite");
+      .populate("offre", "nom description prix dateDebut dateFin disponibilite")
+      .populate("client", "nom email");
+
     res.json(commandes);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: "Erreur lors de la récupération", error: err.message });
   }
 };
 
-// Récupérer une commande par ID
+// ➤ Récupérer commande par ID
 exports.getCommandeById = async (req, res) => {
   try {
     const commande = await Commande.findById(req.params.id)
-      .populate("offre", "description prix dateDebut dateFin disponibilite");
+      .populate("offre", "nom description prix dateDebut dateFin disponibilite")
+      .populate("client", "nom email");
 
-    if (!commande) {
-      return res.status(404).json({ message: "Commande non trouvée" });
-    }
+    if (!commande) return res.status(404).json({ message: "Commande non trouvée" });
 
     res.json(commande);
   } catch (err) {
@@ -39,14 +55,13 @@ exports.getCommandeById = async (req, res) => {
   }
 };
 
-// Mettre à jour le statut
+// ➤ Mettre à jour le statut
 exports.updateStatut = async (req, res) => {
   try {
     const { statut } = req.body;
-
-    const valeursPermises = ['en_attente', 'commandé', 'annulé'];
+    const valeursPermises = ["en_attente", "commandé", "annulé"];
     if (!valeursPermises.includes(statut)) {
-      return res.status(400).json({ message: `Statut invalide. Valeurs permises : ${valeursPermises.join(', ')}` });
+      return res.status(400).json({ message: `Statut invalide. Valeurs permises : ${valeursPermises.join(", ")}` });
     }
 
     const updatedCommande = await Commande.findByIdAndUpdate(
@@ -55,9 +70,7 @@ exports.updateStatut = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedCommande) {
-      return res.status(404).json({ message: "Commande non trouvée" });
-    }
+    if (!updatedCommande) return res.status(404).json({ message: "Commande non trouvée" });
 
     res.json(updatedCommande);
   } catch (err) {
@@ -65,14 +78,13 @@ exports.updateStatut = async (req, res) => {
   }
 };
 
-// Mettre à jour le statut paiement
+// ➤ Mettre à jour le statut paiement
 exports.updateStatutPaiement = async (req, res) => {
   try {
     const { statutPaiement } = req.body;
-
-    const valeursPermises = ['en_attente', 'payé', 'échoué'];
+    const valeursPermises = ["en_attente", "payé", "échoué"];
     if (!valeursPermises.includes(statutPaiement)) {
-      return res.status(400).json({ message: `Statut paiement invalide. Valeurs permises : ${valeursPermises.join(', ')}` });
+      return res.status(400).json({ message: `Statut paiement invalide. Valeurs permises : ${valeursPermises.join(", ")}` });
     }
 
     const updatedCommande = await Commande.findByIdAndUpdate(
@@ -81,9 +93,7 @@ exports.updateStatutPaiement = async (req, res) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedCommande) {
-      return res.status(404).json({ message: "Commande non trouvée" });
-    }
+    if (!updatedCommande) return res.status(404).json({ message: "Commande non trouvée" });
 
     res.json(updatedCommande);
   } catch (err) {
@@ -91,14 +101,11 @@ exports.updateStatutPaiement = async (req, res) => {
   }
 };
 
-// Supprimer une commande
+// ➤ Supprimer commande
 exports.deleteCommande = async (req, res) => {
   try {
     const deletedCommande = await Commande.findByIdAndDelete(req.params.id);
-
-    if (!deletedCommande) {
-      return res.status(404).json({ message: "Commande non trouvée" });
-    }
+    if (!deletedCommande) return res.status(404).json({ message: "Commande non trouvée" });
 
     res.json({ message: "Commande supprimée avec succès" });
   } catch (err) {
