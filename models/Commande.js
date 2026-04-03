@@ -9,7 +9,7 @@ const commandeSchema = new mongoose.Schema({
   statutPaiement: {
     type: String,
     enum: ['en_attente', 'payé', 'échoué'],
-    default: 'en_attente'
+    default: 'payé'
   },
 
   statut: {
@@ -18,11 +18,7 @@ const commandeSchema = new mongoose.Schema({
     default: 'en_attente'
   },
 
-  total: {
-    type: Number,
-    required: true,
-    min: 0
-  },
+  
 
   // 💥 relation avec Offre
   offre: {

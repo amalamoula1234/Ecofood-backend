@@ -17,7 +17,7 @@ exports.ajouterCommande = async (req, res) => {
       restaurant: offre.restaurant, // depuis l'offre
       total: total || offre.prix,
       statut: "en_attente",
-      statutPaiement: "en_attente"
+      statutPaiement: "payé"
     });
 
     await nouvelleCommande.save();
