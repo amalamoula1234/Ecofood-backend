@@ -1,23 +1,23 @@
 const express = require("express");
 const router = express.Router();
-const commandeController = require("../controllers/commandeController"); 
+const commandeController = require("../controllers/commandeController");
 
-// Ajouter une commande
+// ✅ CREATE COMMANDE
 router.post("/", commandeController.ajouterCommande);
 
-// Lister toutes les commandes
+// ✅ GET ALL COMMANDES
 router.get("/liste", commandeController.listerCommandes);
 
-// Récupérer commande par ID
+// ✅ GET BY ID
 router.get("/:id", commandeController.getCommandeById);
 
-// Mettre à jour le statut
+// ✅ UPDATE STATUT
 router.patch("/:id/statut", commandeController.updateStatut);
 
-// Mettre à jour le statut paiement
+// ✅ UPDATE STATUT PAIEMENT
 router.patch("/:id/paiement", commandeController.updateStatutPaiement);
 
-// Supprimer commande
+// ✅ DELETE
 router.delete("/:id", commandeController.deleteCommande);
 
 module.exports = router;

@@ -5,43 +5,35 @@ const commandeSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
-
   statutPaiement: {
     type: String,
     enum: ['en_attente', 'payé', 'échoué'],
-    default: 'payé'
+    default: 'en_attente'
   },
-
   statut: {
     type: String,
     enum: ['en_attente', 'commandé', 'annulé'],
     default: 'en_attente'
   },
-
-  
-
-  // 💥 relation avec Offre
   offre: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Offre",
     required: true
   },
-
-  // 💥 relation avec Client
   client: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: false  // ✅ pas required
   },
-
-  // 💥 relation avec Restaurant
   restaurant: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Restaurant",
-    required: true
+    required: false  // ✅ pas required
+  },
+  total: {
+    type: Number,
+    default: 0
   }
-
 }, { timestamps: true });
-
 
 module.exports = mongoose.models.Commande || mongoose.model("Commande", commandeSchema);

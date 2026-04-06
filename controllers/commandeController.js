@@ -1,42 +1,58 @@
 // controllers/commandeController.js
+
 const Commande = require("../models/Commande");
 const Offre = require("../models/Offre");
 
 // ➤ Ajouter une commande
+// commandeController.js
 exports.ajouterCommande = async (req, res) => {
+  console.log("BODY:", req.body);
   try {
     const { offreId, client, total } = req.body;
 
-    // Vérifier que l'offre existe
+    if (!offreId) {
+      return res.status(400).json({ message: "offreId obligatoire" });
+    }
+
     const offre = await Offre.findById(offreId);
-    if (!offre) return res.status(404).json({ message: "Offre non trouvée" });
+    if (!offre) {  // ✅ CORRIGÉ : vérifie l'offre, pas offreId
+      return res.status(404).json({ message: "Offre introuvable" });
+    }
 
     const nouvelleCommande = new Commande({
-      offre: offre._id,
-      client: client || null,       // si client pas fourni
-      restaurant: offre.restaurant, // depuis l'offre
-      total: total || offre.prix,
-      statut: "en_attente",
-      statutPaiement: "payé"
-    });
+  offre: offre._id,
+  client: client || null, // ✅ userId envoyé depuis le frontend
+  restaurant: offre.restaurant || null,
+  total: total || offre.prix,
+  statut: "en_attente",
+  statutPaiement: "payé",
+  dateCommande: new Date(),
+});
 
-    await nouvelleCommande.save();
-    res.status(201).json(nouvelleCommande);
+    const saved = await nouvelleCommande.save();
+    console.log("✅ COMMANDE CRÉÉE:", saved._id);
+    res.status(201).json(saved);
   } catch (err) {
-    res.status(400).json({ message: "Erreur d'ajout", error: err.message });
+    console.error("❌ ERREUR AJOUT:", err);
+    res.status(500).json({ message: err.message });
   }
 };
+
 
 // ➤ Lister toutes les commandes
 exports.listerCommandes = async (req, res) => {
   try {
     const commandes = await Commande.find()
-      .populate("offre", "nom description prix dateDebut dateFin disponibilite")
-      .populate("client", "nom email");
+      .populate("offre", "nom description prix dateDebut disponibilite")
+      .populate("client", "nom email")
+      .sort({ createdAt: -1 }); // 🔥 IMPORTANT
+
+    console.log("📦 COMMANDES:", commandes.length);
 
     res.json(commandes);
   } catch (err) {
-    res.status(500).json({ message: "Erreur lors de la récupération", error: err.message });
+    console.error("❌ ERREUR LISTE:", err);
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -44,14 +60,16 @@ exports.listerCommandes = async (req, res) => {
 exports.getCommandeById = async (req, res) => {
   try {
     const commande = await Commande.findById(req.params.id)
-      .populate("offre", "nom description prix dateDebut dateFin disponibilite")
+      .populate("offre", "nom description prix")
       .populate("client", "nom email");
 
-    if (!commande) return res.status(404).json({ message: "Commande non trouvée" });
+    if (!commande) {
+      return res.status(404).json({ message: "Commande non trouvée" });
+    }
 
     res.json(commande);
   } catch (err) {
-    res.status(500).json({ message: "Erreur lors de la récupération", error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -59,56 +77,69 @@ exports.getCommandeById = async (req, res) => {
 exports.updateStatut = async (req, res) => {
   try {
     const { statut } = req.body;
+
     const valeursPermises = ["en_attente", "commandé", "annulé"];
     if (!valeursPermises.includes(statut)) {
-      return res.status(400).json({ message: `Statut invalide. Valeurs permises : ${valeursPermises.join(", ")}` });
+      return res.status(400).json({
+        message: `Statut invalide: ${valeursPermises.join(", ")}`,
+      });
     }
 
-    const updatedCommande = await Commande.findByIdAndUpdate(
+    const updated = await Commande.findByIdAndUpdate(
       req.params.id,
       { statut },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
-    if (!updatedCommande) return res.status(404).json({ message: "Commande non trouvée" });
+    if (!updated) {
+      return res.status(404).json({ message: "Commande non trouvée" });
+    }
 
-    res.json(updatedCommande);
+    res.json(updated);
   } catch (err) {
-    res.status(400).json({ message: "Erreur de mise à jour du statut", error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
-// ➤ Mettre à jour le statut paiement
+// ➤ Mettre à jour statut paiement
 exports.updateStatutPaiement = async (req, res) => {
   try {
     const { statutPaiement } = req.body;
+
     const valeursPermises = ["en_attente", "payé", "échoué"];
     if (!valeursPermises.includes(statutPaiement)) {
-      return res.status(400).json({ message: `Statut paiement invalide. Valeurs permises : ${valeursPermises.join(", ")}` });
+      return res.status(400).json({
+        message: `Statut paiement invalide: ${valeursPermises.join(", ")}`,
+      });
     }
 
-    const updatedCommande = await Commande.findByIdAndUpdate(
+    const updated = await Commande.findByIdAndUpdate(
       req.params.id,
       { statutPaiement },
-      { new: true, runValidators: true }
+      { new: true }
     );
 
-    if (!updatedCommande) return res.status(404).json({ message: "Commande non trouvée" });
+    if (!updated) {
+      return res.status(404).json({ message: "Commande non trouvée" });
+    }
 
-    res.json(updatedCommande);
+    res.json(updated);
   } catch (err) {
-    res.status(400).json({ message: "Erreur de mise à jour du paiement", error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
 
 // ➤ Supprimer commande
 exports.deleteCommande = async (req, res) => {
   try {
-    const deletedCommande = await Commande.findByIdAndDelete(req.params.id);
-    if (!deletedCommande) return res.status(404).json({ message: "Commande non trouvée" });
+    const deleted = await Commande.findByIdAndDelete(req.params.id);
 
-    res.json({ message: "Commande supprimée avec succès" });
+    if (!deleted) {
+      return res.status(404).json({ message: "Commande non trouvée" });
+    }
+
+    res.json({ message: "Commande supprimée" });
   } catch (err) {
-    res.status(500).json({ message: "Erreur de suppression", error: err.message });
+    res.status(500).json({ message: err.message });
   }
 };
