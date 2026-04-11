@@ -1,5 +1,6 @@
 // controllers/offreController.js
 const Offre = require("../models/Offre");
+const Restaurant = require("../models/Restaurant");
 
 // Ajouter une offre
 exports.ajouterOffre = async (req, res) => {
@@ -12,13 +13,29 @@ exports.ajouterOffre = async (req, res) => {
   }
 };
 
-// Lister toutes les offres
+// Lister toutes les offres (Admin)
 exports.listerOffres = async (req, res) => {
   try {
-    const offres = await Offre.find();
+    const offres = await Offre.find().populate("restaurant", "nom");
     res.json(offres);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// Lister MES offres (Restaurateur)
+exports.getMesOffres = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    // Trouver les restaurants de ce restaurateur
+    const restaurants = await Restaurant.find({ restaurateur: userId });
+    const restaurantIds = restaurants.map(r => r._id);
+
+    // Trouver les offres liées à ces restaurants
+    const offres = await Offre.find({ restaurant: { $in: restaurantIds } }).populate("restaurant", "nom");
+    res.json(offres);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

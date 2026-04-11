@@ -12,13 +12,23 @@ exports.ajouterRestaurant = async (req, res) => {
   }
 };
 
-// Lister tous les restaurants
+// Lister tous les restaurants (Admin)
 exports.listerRestaurants = async (req, res) => {
   try {
-    const restaurants = await Restaurant.find();
+    const restaurants = await Restaurant.find().populate("restaurateur", "nom email");
     res.json(restaurants);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// Lister MES restaurants (Restaurateur)
+exports.getMesRestaurants = async (req, res) => {
+  try {
+    const restaurants = await Restaurant.find({ restaurateur: req.user.id });
+    res.json(restaurants);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 

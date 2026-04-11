@@ -12,11 +12,26 @@ exports.ajouterNotification = async (req, res) => {
   }
 };
 
-// Lister toutes les notifications
+// Lister MES notifications (Restaurateur ou Admin)
 exports.listerNotifications = async (req, res) => {
   try {
-    const notifications = await Notification.find().sort({ dateEnvoi: -1 });
+    const notifications = await Notification.find({ destinataire: req.user.id })
+      .sort({ dateEnvoi: -1 });
     res.json(notifications);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Marquer comme lu
+exports.marquerCommeLu = async (req, res) => {
+  try {
+    const updated = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { lu: true },
+      { new: true }
+    );
+    res.json(updated);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
