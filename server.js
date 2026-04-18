@@ -28,6 +28,8 @@ const restaurantRoutes = require("./routes/restaurantRoutes");
 const paiementRoutes = require("./routes/paiementRoutes");
 const notificationRoutes = require("./routes/notificationRoutes");
 const avisRoutes = require("./routes/avisRoutes");
+const statsRoutes = require("./routes/statsRoutes");
+const contactRoutes = require("./routes/contactRoutes");
 
 app.post('/create-checkout-session', async (req, res) => {
   const { offre } = req.body;
@@ -69,6 +71,8 @@ app.use('/api/restaurant', restaurantRoutes);
 app.use('/api/paiement', paiementRoutes);
 app.use('/api/notification', notificationRoutes);
 app.use('/api/avis', avisRoutes);
+app.use('/api/stats', statsRoutes);
+app.use('/api/contact', contactRoutes);
 
 app.get('/test', (req, res) => res.send('api ok'));
 
